@@ -23,8 +23,7 @@ else:
     # Choose the Gemini model to use
     # For text generation, 'gemini-pro' is a good choice.
     # You can explore other models available via genai.list_models()
-    model = genai.GenerativeModel('gemini-pro')
-
+model = genai.GenerativeModel('models/text-bison-001') # Changed model name!
 
 @app.get("/")
 async def root():
