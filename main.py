@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware # NEW IMPORT!
 from pydantic import BaseModel, Field
 import os
 import google.generativeai as genai
@@ -21,6 +22,23 @@ class HeadlineInput(BaseModel):
 
 # Initialize FastAPI app
 app = FastAPI()
+
+# --- NEW CORS CONFIGURATION ---
+# In development, you might use ["*"] to allow all origins.
+# In production, replace "*" with the actual URL(s) of your frontend (e.g., "https://your-frontend.vercel.app").
+origins = [
+    "*" # Allows requests from any origin. For production, specify your Vercel URL here!
+    # Example for production: "https://your-frontend-name.vercel.app"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True, # Allow cookies (if you ever use them)
+    allow_methods=["*"],    # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],    # Allow all headers
+)
+# --- END NEW CORS CONFIGURATION ---
 
 # Configure Gemini API
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -79,7 +97,6 @@ async def summarize_article(input: ArticleInput):
         print(f"Error calling Gemini API for summarization: {e}")
         return {"error": f"Failed to summarize article: {e}"}, 500
 
-# NEW ENDPOINT: Generate headlines for text content
 @app.post("/generate_headline")
 async def generate_headline(input: HeadlineInput):
     if not genai or not GOOGLE_API_KEY:
@@ -89,7 +106,6 @@ async def generate_headline(input: HeadlineInput):
     num_headlines = input.num_headlines
     headline_style = input.headline_style
 
-    # Craft a precise prompt for headline generation
     prompt = f"""Generate {num_headlines} distinct news headlines for the following text.
     The headlines should be {headline_style}.
     Present each headline on a new line, prefixed with a number (e.g., "1. Headline").
