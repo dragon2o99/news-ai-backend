@@ -1,30 +1,29 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import os
-import google.generativeai as genai # New import!
+import google.generativeai as genai
 
-# Define the expected input structure
+# Define the expected input structure for /chat (existing)
 class PromptInput(BaseModel):
     prompt: str
+
+# Define the expected input structure for /summarize_article (NEW!)
+class ArticleInput(BaseModel):
+    article_text: str
+    summary_length: str = "3 sentences" # Optional: allows user to specify length
 
 # Initialize FastAPI app
 app = FastAPI()
 
 # Configure Gemini API
-# Get your Google API token from Render environment variables
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if not GOOGLE_API_KEY:
     print("Error: GOOGLE_API_KEY environment variable not set.")
-    # In a production app, you'd handle this more robustly
-    genai = None # Disable Gemini features if key is missing
+    genai = None
 else:
     genai.configure(api_key=GOOGLE_API_KEY)
-    # Choose the Gemini model to use
-    # For text generation, 'gemini-pro' is a good choice.
-    # You can explore other models available via genai.list_models()
-    #model = genai.GenerativeModel('gemini-1.5-pro-latest') # Trying Gemini 1.5 Pro!
-model = genai.GenerativeModel('gemini-1.5-flash-latest') # Using an available model!
+    model = genai.GenerativeModel('gemini-1.5-flash-latest') # Back to Flash model
 
 @app.get("/")
 async def root():
@@ -38,13 +37,39 @@ async def chat(input: PromptInput):
     prompt = input.prompt
 
     try:
-        # Generate content using Gemini
         response = model.generate_content(prompt)
-        # The actual text is usually in response.text
         generated_text = response.text
         return {"response": generated_text}
 
     except Exception as e:
-        # Catch any errors from the Gemini API call
         print(f"Error calling Gemini API: {e}")
         return {"error": f"Failed to get response from Gemini AI: {e}"}, 500
+
+# NEW ENDPOINT: Summarize an article
+@app.post("/summarize_article")
+async def summarize_article(input: ArticleInput):
+    if not genai or not GOOGLE_API_KEY:
+        return {"error": "Google API key not configured."}, 500
+
+    article = input.article_text
+    summary_length = input.summary_length
+
+    # Craft a precise prompt for summarization
+    prompt = f"""Summarize the following news article into {summary_length}.
+    Ensure the summary is concise, captures the main points, and is suitable for a news brief.
+
+    Article:
+    ---
+    {article}
+    ---
+    Summary:
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        generated_summary = response.text
+        return {"summary": generated_summary}
+
+    except Exception as e:
+        print(f"Error calling Gemini API for summarization: {e}")
+        return {"error": f"Failed to summarize article: {e}"}, 500
