@@ -8,8 +8,7 @@ app = FastAPI()
 # Mistral-7B-Instruct-v0.1 is a good choice for this purpose
 # Note: This will download the model the first time it runs on Render.
 try:
-    generator = pipeline("text-generation", model="distilgpt2")
-  
+   generator = pipeline("text-generation", model="sshleifer/tiny-gpt2")
 except Exception as e:
     print(f"Error loading model: {e}")
     # Fallback or exit if model loading fails
