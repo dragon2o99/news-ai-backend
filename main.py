@@ -23,8 +23,8 @@ else:
     # Choose the Gemini model to use
     # For text generation, 'gemini-pro' is a good choice.
     # You can explore other models available via genai.list_models()
-    model = genai.GenerativeModel('gemini-1.5-pro-latest') # Trying Gemini 1.5 Pro!
-#model = genai.GenerativeModel('gemini-1.5-flash-latest') # Using an available model!
+    #model = genai.GenerativeModel('gemini-1.5-pro-latest') # Trying Gemini 1.5 Pro!
+model = genai.GenerativeModel('gemini-1.5-flash-latest') # Using an available model!
 
 @app.get("/")
 async def root():
