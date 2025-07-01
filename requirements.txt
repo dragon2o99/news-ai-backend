@@ -3,6 +3,7 @@ uvicorn==0.29.0
 pydantic==2.7.1
 google-generativeai==0.7.0
 python-dotenv==1.0.1
-# Add these new lines:
+requests==2.32.3 # Add this line
 httpx==0.27.0
 beautifulsoup4==4.12.3
+pytz==2024.1 # Add this line (or whatever the latest stable version is)
