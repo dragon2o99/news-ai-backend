@@ -1,1 +1,1 @@
-python-3.12.latest
+python-2.5.3
