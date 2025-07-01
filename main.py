@@ -13,8 +13,14 @@ WEBSITE_CONFIGS = {
         "url": "https://www.theglobeandmail.com/",
         "selector": "h3.c-card__title a, h2.c-story-block__title a, h2.c-feature-block__headline-text a",
         # Find their RSS feed if available. Many news sites have them.
-        # Example: "rss_url": "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/?filter=news"
+        "rss_url": "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/"
         # I'll leave this commented out as you'll need to find the exact RSS URL.
+    },
+     "The Star": {
+        "url": "https://thestar.com/",
+        "selector": "h3.article-card__title a, h2.entry-title a, .card-title a",
+        # Toronto Star RSS:
+        "rss_url": "https://www.thestar.com/search/?f=rss&t=article&bl=2827101&l=20" # Common RSS feed path
     },
     "Toronto Sun": {
         "url": "https://torontosun.com/",
@@ -43,7 +49,8 @@ WEBSITE_CONFIGS = {
     "Juno News": { # This one timed out, so RSS is a good candidate if available
         "url": "https://junonews.com/",
         "selector": "h3 a, a[data-testid='post-title-link']",
-        # You'll need to search for Juno News RSS. If not available, we stick to scraping.
+        "rss_url": "https://www.junonews.com/feed"
+        
     },
     "Rebel News": {
         "url": "https://www.rebelnews.com/news",
